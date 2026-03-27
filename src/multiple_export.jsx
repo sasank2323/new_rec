@@ -15,3 +15,5 @@ function Second() {
 }
 
 export { First, Second };
+
+export const varr = "https://www.google.com";
