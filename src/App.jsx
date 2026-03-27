@@ -2,14 +2,14 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { First, Second } from './multiple_export'
 
 function App() {
   const [count, setCount] = useState(0);
   return (
     <>
-      <p>{sum(count, 2)}</p>
-      <p>{count}</p>
-      <button onClick={() => setCount(count + 1)}>button</button>
+      <First />
+      <Second />
     </>
   )
 }
