@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Toggle from './toggle'
 import Wrapper from './Wrapper'
+import CheckboxHandling from './CheckboxHandling'
 
 function App() {
   const [count, setCount] = useState(0);
@@ -13,10 +14,7 @@ function App() {
       <input type="text" value={val} onChange={(e) => setVal(e.target.value)} />
       <button onClick={() => setVal("")}>clear</button>
       <p>{val}</p>
-      <Wrapper>
-        <h1>warpper childern </h1>
-        <p>{val}</p>
-      </Wrapper>
+      <CheckboxHandling />
     </>
   )
 }
