@@ -1,5 +1,5 @@
 
-
+import PassingDataTocomponent from "./PassingDataTocomponent";
 function ForLoopWithTable() {
     const data = [
         { name: "john", age: 30, city: "new york" },
@@ -28,6 +28,9 @@ function ForLoopWithTable() {
                     ))}
                 </tbody>
             </table>
+            {data.map((item, index) => (
+                <PassingDataTocomponent data={item} />
+            ))}
         </>
     );
 }
