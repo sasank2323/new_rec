@@ -6,6 +6,7 @@ import Toggle from './toggle'
 import Wrapper from './Wrapper'
 import CheckboxHandling from './CheckboxHandling'
 import ForLoopWithTable from './ForLoopWithTable'
+import Useeffectcode from './Useeffectcode'
 
 function App() {
   const [count, setCount] = useState(0);
@@ -15,8 +16,7 @@ function App() {
       <input type="text" value={val} onChange={(e) => setVal(e.target.value)} />
       <button onClick={() => setVal("")}>clear</button>
       <p>{val}</p>
-      <CheckboxHandling />
-      <ForLoopWithTable />
+      <Useeffectcode />
     </>
   )
 }
