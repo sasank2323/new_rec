@@ -9,12 +9,14 @@ import ForLoopWithTable from './ForLoopWithTable'
 import Useeffectcode from './Useeffectcode'
 import { Button } from 'react-bootstrap'
 import RefHook from './refHook'
+import Parent from './Parent'
 
 function App() {
   const [count, setCount] = useState(0);
   const [val, setVal] = useState("hello");
   return (
     <>
+      <Parent />
       <RefHook />
     </>
   )
