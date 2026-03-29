@@ -1,14 +1,24 @@
-
 import { useEffect, useState } from "react";
+import styles from './Useeffectcode.module.css';
+
 function Useeffectcode({ color }) {
+
+    // unmounting is nothing but hiding the component from the DOM so use display thats it 
+    useEffect(() => {
+        return () => {
+            console.log("unmount");
+        };
+    }, [])
     const [count, setCount] = useState(0);
     const [count2, setCount2] = useState(0);
     const [time, setTime] = useState(new Date().toLocaleTimeString());
+    // this will run on updating
     useEffect(() => {
         console.log("use effect");
         setCount2(count + 1);
     }, [count]);
     // this is use effect with empty array it will run only once when the component is mounted
+    // this will only run on mounting only once 
     useEffect(() => {
         console.log("use effect 20 ");
     }, []);
@@ -36,7 +46,7 @@ function Useeffectcode({ color }) {
             <h1>Useeffectcode</h1>
             <button onClick={() => setCount(count + 1)}>increment</button>
             <button onClick={() => setCount2(count2 + 1)}>increment2</button>
-            <p>{count}</p>
+            <p className={styles.heading}>{time}</p>
             <p>{count2}</p>
         </>
     );
