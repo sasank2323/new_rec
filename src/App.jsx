@@ -13,10 +13,13 @@ function App() {
   const [val, setVal] = useState("hello");
   return (
     <>
-      <input type="text" value={val} onChange={(e) => setVal(e.target.value)} />
-      <button onClick={() => setVal("")}>clear</button>
+      <select onChange={(e) => setVal(e.target.value)}>
+        <option value="red">red</option>
+        <option value="green">green</option>
+        <option value="blue">blue</option>
+      </select>
       <p>{val}</p>
-      <Useeffectcode />
+      <Useeffectcode color={val} />
     </>
   )
 }
