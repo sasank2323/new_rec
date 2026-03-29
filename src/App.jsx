@@ -7,19 +7,15 @@ import Wrapper from './Wrapper'
 import CheckboxHandling from './CheckboxHandling'
 import ForLoopWithTable from './ForLoopWithTable'
 import Useeffectcode from './Useeffectcode'
+import { Button } from 'react-bootstrap'
+import RefHook from './refHook'
 
 function App() {
   const [count, setCount] = useState(0);
   const [val, setVal] = useState("hello");
   return (
     <>
-      <select onChange={(e) => setVal(e.target.value)}>
-        <option value="red">red</option>
-        <option value="green">green</option>
-        <option value="blue">blue</option>
-      </select>
-      <p>{val}</p>
-      <Useeffectcode color={val} />
+      <RefHook />
     </>
   )
 }
