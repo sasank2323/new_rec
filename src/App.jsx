@@ -5,6 +5,7 @@ import './App.css'
 import Toggle from './toggle'
 import Wrapper from './Wrapper'
 import CheckboxHandling from './CheckboxHandling'
+import ForLoopWithTable from './ForLoopWithTable'
 
 function App() {
   const [count, setCount] = useState(0);
@@ -15,6 +16,7 @@ function App() {
       <button onClick={() => setVal("")}>clear</button>
       <p>{val}</p>
       <CheckboxHandling />
+      <ForLoopWithTable />
     </>
   )
 }
