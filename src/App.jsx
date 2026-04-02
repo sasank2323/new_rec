@@ -10,7 +10,7 @@ import Useeffectcode from './Useeffectcode'
 import { Button } from 'react-bootstrap'
 import RefHook from './refHook'
 import Parent from './Parent'
-
+import Useactionstate from './Useactionstate'
 function App() {
   const [count, setCount] = useState(0);
   const [val, setVal] = useState("hello");
@@ -18,6 +18,7 @@ function App() {
     <>
       <Parent />
       <RefHook />
+      <Useactionstate />
     </>
   )
 }
