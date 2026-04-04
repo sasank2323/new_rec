@@ -1,0 +1,1247 @@
+We use the **Context API** in React to **share data globally across components without passing props manually at every level (prop drilling).**
+
+Let’s break it down simply 👇
+
+---
+
+## 🚨 Problem (Without Context API)
+
+Imagine you have this structure:
+
+```
+App → Parent → Child → Grandchild
+```
+
+Now suppose you want to send **user data** from `App` to `Grandchild`.
+
+👉 You have to pass props like this:
+
+```
+App → Parent → Child → Grandchild
+```
+
+Even if `Parent` and `Child` don’t need it, they still have to pass it.
+
+This is called **prop drilling** ❌
+It makes code messy and hard to maintain.
+
+---
+
+## ✅ Solution (Context API)
+
+The **Context API** lets you **store data in one place and access it anywhere** in the component tree.
+
+👉 No need to pass props manually through every level.
+
+---
+
+## 🧠 What Context API Does
+
+* Creates a **global state**
+* Allows any component to:
+
+  * **read data**
+  * **update data**
+* Avoids unnecessary prop passing
+
+---
+
+## 🔧 Real Example
+
+### 1. Create Context
+
+```js
+import { createContext } from "react";
+
+export const UserContext = createContext();
+```
+
+---
+
+### 2. Provide Context (Wrap your app)
+
+```js
+<UserContext.Provider value={{ name: "Sai" }}>
+  <App />
+</UserContext.Provider>
+```
+
+---
+
+### 3. Consume Context (Anywhere)
+
+```js
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
+
+function Profile() {
+  const user = useContext(UserContext);
+  return <h1>{user.name}</h1>;
+}
+```
+
+---
+
+## 🎯 When to Use Context API
+
+Use it when data is needed **in many components**, like:
+
+* 👤 User login info
+* 🌙 Dark/light theme
+* 🌍 Language settings
+* 🛒 Shopping cart
+
+---
+
+## ⚠️ When NOT to Use
+
+* Small apps with simple props
+* Data used by only 1–2 components
+
+👉 Overusing it can make debugging harder.
+
+---
+
+## 🔥 Simple Analogy
+
+Think of Context API like **WiFi** 📶
+Instead of connecting cables (props) to every device,
+everyone connects directly to WiFi (context).
+
+---
+
+If you want, I can next show:
+
+* Context API vs Redux (very important for interviews)
+* OR build a real login system using Context step-by-step 👍
+
+Yes — you **can use Context API with APIs**, but one thing first:
+
+👉 Context API is **NOT for storing APIs**,
+👉 It’s for **storing and sharing API *data*** across your app.
+
+---
+
+## 🧠 What you actually do
+
+* Call API (fetch/axios)
+* Store response in Context
+* Use that data anywhere
+
+---
+
+## ✅ Step-by-step (Real Example)
+
+Let’s say you want to fetch users from an API and use it everywhere.
+
+---
+
+### 1. Create Context
+
+```js
+import { createContext } from "react";
+
+export const UserContext = createContext();
+```
+
+---
+
+### 2. Create Provider + API Call
+
+```js
+import { useState, useEffect } from "react";
+import { UserContext } from "./UserContext";
+
+function UserProvider({ children }) {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ users }}>
+      {children}
+    </UserContext.Provider>
+  );
+}
+
+export default UserProvider;
+```
+
+---
+
+### 3. Wrap Your App
+
+```js
+import UserProvider from "./UserProvider";
+
+function App() {
+  return (
+    <UserProvider>
+      <YourRoutes />
+    </UserProvider>
+  );
+}
+```
+
+---
+
+### 4. Use Data Anywhere
+
+```js
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
+
+function UsersList() {
+  const { users } = useContext(UserContext);
+
+  return (
+    <div>
+      {users.map(user => (
+        <p key={user.id}>{user.name}</p>
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## 🔥 What’s happening here
+
+* API is called **once**
+* Data stored in Context
+* Any component can access it 🚀
+
+---
+
+## ⚡ Advanced (Best Practice)
+
+Add loading + error handling:
+
+```js
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
+
+useEffect(() => {
+  fetch("API_URL")
+    .then(res => res.json())
+    .then(data => {
+      setUsers(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      setError(err);
+      setLoading(false);
+    });
+}, []);
+```
+
+---
+
+## ⚠️ Important Tips
+
+* ❌ Don’t store **too many APIs in one context**
+* ✅ Create **multiple contexts**:
+
+  * UserContext
+  * ProductContext
+  * AuthContext
+
+---
+
+## 🧠 Interview Line (Very Important)
+
+👉 “Context API is used to share API data globally and avoid redundant API calls and prop drilling.”
+
+---
+
+If you want next level, I can show:
+
+* 🔥 Context + Axios + Custom Hook (clean architecture)
+* 🔥 Context vs Redux vs React Query (real-world usage)
+* 🔥 How to cache API data properly (important for performance)
+
+Ahh got it — you want **two separate Contexts** (best practice for scalable apps) 👍
+Let’s do it cleanly.
+
+---
+
+# ✅ Structure (What we will build)
+
+* **UserContext** → handles users API
+* **ProductContext** → handles products API
+* Wrap both in App
+* Use anywhere
+
+---
+
+# 🔹 1. Create User Context
+
+```js
+// UserContext.js
+import { createContext, useState, useEffect } from "react";
+
+export const UserContext = createContext();
+
+export function UserProvider({ children }) {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ users }}>
+      {children}
+    </UserContext.Provider>
+  );
+}
+```
+
+---
+
+# 🔹 2. Create Product Context
+
+```js
+// ProductContext.js
+import { createContext, useState, useEffect } from "react";
+
+export const ProductContext = createContext();
+
+export function ProductProvider({ children }) {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products")
+      .then(res => res.json())
+      .then(data => setProducts(data));
+  }, []);
+
+  return (
+    <ProductContext.Provider value={{ products }}>
+      {children}
+    </ProductContext.Provider>
+  );
+}
+```
+
+---
+
+# 🔹 3. Wrap Both in App
+
+👉 Order doesn’t matter much, just wrap properly:
+
+```js
+import { UserProvider } from "./UserContext";
+import { ProductProvider } from "./ProductContext";
+
+function App() {
+  return (
+    <UserProvider>
+      <ProductProvider>
+        <YourRoutes />
+      </ProductProvider>
+    </UserProvider>
+  );
+}
+```
+
+---
+
+# 🔹 4. Use Them Anywhere
+
+### 👉 Using Users
+
+```js
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
+
+function Users() {
+  const { users } = useContext(UserContext);
+  return users.map(u => <p key={u.id}>{u.name}</p>);
+}
+```
+
+---
+
+### 👉 Using Products
+
+```js
+import { useContext } from "react";
+import { ProductContext } from "./ProductContext";
+
+function Products() {
+  const { products } = useContext(ProductContext);
+  return products.map(p => <p key={p.id}>{p.title}</p>);
+}
+```
+
+---
+
+# 🔥 Why this is better
+
+* Clean separation ✅
+* Easy to maintain ✅
+* Scales well for big apps ✅
+* No unnecessary re-renders (important!) ✅
+
+---
+
+# ⚡ Pro Tip (Very Important)
+
+If both contexts are used together often, you can create a **CombinedProvider**:
+
+```js
+function AppProviders({ children }) {
+  return (
+    <UserProvider>
+      <ProductProvider>
+        {children}
+      </ProductProvider>
+    </UserProvider>
+  );
+}
+```
+
+Then in App:
+
+```js
+<AppProviders>
+  <YourRoutes />
+</AppProviders>
+```
+
+---
+
+# 🧠 Interview Line
+
+👉 “In large applications, we separate contexts based on domain (like users, products) to improve scalability and avoid unnecessary re-renders.”
+
+---
+
+If you want next level 🔥
+I can show:
+
+* How to **update data (POST/PUT/DELETE) inside context**
+* OR how senior devs replace this with **React Query (much better for APIs)**
+Good — this is **core React concept**, you must understand this clearly 👇
+
+---
+
+# 🧠 What is `children`?
+
+👉 `children` is a **special prop in React**
+It represents **whatever you put inside a component**
+
+---
+
+## 🔍 Example
+
+```js
+<ProductProvider>
+  <App />
+</ProductProvider>
+```
+
+👉 Here:
+
+```js
+<App />
+```
+
+is the **`children`**
+
+---
+
+## 💡 So inside your provider:
+
+```js
+function ProductProvider({ children }) {
+```
+
+👉 means:
+
+> “Give me whatever is inside this component”
+
+---
+
+# 🎯 Why we wrap with `<ProductContext.Provider>`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+  {children}
+</ProductContext.Provider>
+```
+
+👉 This means:
+
+> “All components inside `children` can access `products` globally”
+
+---
+
+## 🔥 Visual Understanding
+
+```
+ProductProvider
+   ↓
+ProductContext.Provider (data available here)
+   ↓
+App
+   ↓
+All components inside App
+```
+
+👉 So:
+
+* App ✅ can access context
+* All child components ✅ can access context
+
+---
+
+# ❌ What if you don’t use `{children}`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+</ProductContext.Provider>
+```
+
+👉 Then NOTHING is inside it 😅
+👉 No component can access your data
+
+---
+
+# 🧠 Simple Analogy
+
+Think of it like a **WiFi Router** 📶
+
+* `<ProductContext.Provider>` = WiFi Router
+* `value={{ products }}` = Internet data
+* `{children}` = Devices connected
+
+👉 Only devices inside range (children) get internet
+
+---
+
+# ⚡ One More Example
+
+```js
+function Box({ children }) {
+  return <div>{children}</div>;
+}
+
+<Box>
+  <p>Hello</p>
+</Box>
+```
+
+👉 Output:
+
+```
+Hello
+```
+
+Because `<p>Hello</p>` is the **children**
+
+---
+
+# 🧠 Interview Line
+
+👉 “`children` is a special prop used to render nested components, and in Context API it allows all nested components to access shared data.”
+
+---
+
+If you want, next I can show:
+
+* 🔥 Why context causes re-renders (very important)
+* 🔥 How to optimize context (used in real companies)
+
+Good — this is **core React concept**, you must understand this clearly 👇
+
+---
+
+# 🧠 What is `children`?
+
+👉 `children` is a **special prop in React**
+It represents **whatever you put inside a component**
+
+---
+
+## 🔍 Example
+
+```js
+<ProductProvider>
+  <App />
+</ProductProvider>
+```
+
+👉 Here:
+
+```js
+<App />
+```
+
+is the **`children`**
+
+---
+
+## 💡 So inside your provider:
+
+```js
+function ProductProvider({ children }) {
+```
+
+👉 means:
+
+> “Give me whatever is inside this component”
+
+---
+
+# 🎯 Why we wrap with `<ProductContext.Provider>`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+  {children}
+</ProductContext.Provider>
+```
+
+👉 This means:
+
+> “All components inside `children` can access `products` globally”
+
+---
+
+## 🔥 Visual Understanding
+
+```
+ProductProvider
+   ↓
+ProductContext.Provider (data available here)
+   ↓
+App
+   ↓
+All components inside App
+```
+
+👉 So:
+
+* App ✅ can access context
+* All child components ✅ can access context
+
+---
+
+# ❌ What if you don’t use `{children}`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+</ProductContext.Provider>
+```
+
+👉 Then NOTHING is inside it 😅
+👉 No component can access your data
+
+---
+
+# 🧠 Simple Analogy
+
+Think of it like a **WiFi Router** 📶
+
+* `<ProductContext.Provider>` = WiFi Router
+* `value={{ products }}` = Internet data
+* `{children}` = Devices connected
+
+👉 Only devices inside range (children) get internet
+
+---
+
+# ⚡ One More Example
+
+```js
+function Box({ children }) {
+  return <div>{children}</div>;
+}
+
+<Box>
+  <p>Hello</p>
+</Box>
+```
+
+👉 Output:
+
+```
+Hello
+```
+
+Because `<p>Hello</p>` is the **children**
+
+---
+
+# 🧠 Interview Line
+
+👉 “`children` is a special prop used to render nested components, and in Context API it allows all nested components to access shared data.”
+
+---
+
+If you want, next I can show:
+
+* 🔥 Why context causes re-renders (very important)
+* 🔥 How to optimize context (used in real companies)
+Good — this is **core React concept**, you must understand this clearly 👇
+
+---
+
+# 🧠 What is `children`?
+
+👉 `children` is a **special prop in React**
+It represents **whatever you put inside a component**
+
+---
+
+## 🔍 Example
+
+```js
+<ProductProvider>
+  <App />
+</ProductProvider>
+```
+
+👉 Here:
+
+```js
+<App />
+```
+
+is the **`children`**
+
+---
+
+## 💡 So inside your provider:
+
+```js
+function ProductProvider({ children }) {
+```
+
+👉 means:
+
+> “Give me whatever is inside this component”
+
+---
+
+# 🎯 Why we wrap with `<ProductContext.Provider>`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+  {children}
+</ProductContext.Provider>
+```
+
+👉 This means:
+
+> “All components inside `children` can access `products` globally”
+
+---
+
+## 🔥 Visual Understanding
+
+```
+ProductProvider
+   ↓
+ProductContext.Provider (data available here)
+   ↓
+App
+   ↓
+All components inside App
+```
+
+👉 So:
+
+* App ✅ can access context
+* All child components ✅ can access context
+
+---
+
+# ❌ What if you don’t use `{children}`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+</ProductContext.Provider>
+```
+
+👉 Then NOTHING is inside it 😅
+👉 No component can access your data
+
+---
+
+# 🧠 Simple Analogy
+
+Think of it like a **WiFi Router** 📶
+
+* `<ProductContext.Provider>` = WiFi Router
+* `value={{ products }}` = Internet data
+* `{children}` = Devices connected
+
+👉 Only devices inside range (children) get internet
+
+---
+
+# ⚡ One More Example
+
+```js
+function Box({ children }) {
+  return <div>{children}</div>;
+}
+
+<Box>
+  <p>Hello</p>
+</Box>
+```
+
+👉 Output:
+
+```
+Hello
+```
+
+Because `<p>Hello</p>` is the **children**
+
+---
+
+# 🧠 Interview Line
+
+👉 “`children` is a special prop used to render nested components, and in Context API it allows all nested components to access shared data.”
+
+---
+
+If you want, next I can show:
+
+* 🔥 Why context causes re-renders (very important)
+* 🔥 How to optimize context (used in real companies)
+
+
+Good — this is **core React concept**, you must understand this clearly 👇
+
+---
+
+# 🧠 What is `children`?
+
+👉 `children` is a **special prop in React**
+It represents **whatever you put inside a component**
+
+---
+
+## 🔍 Example
+
+```js
+<ProductProvider>
+  <App />
+</ProductProvider>
+```
+
+👉 Here:
+
+```js
+<App />
+```
+
+is the **`children`**
+
+---
+
+## 💡 So inside your provider:
+
+```js
+function ProductProvider({ children }) {
+```
+
+👉 means:
+
+> “Give me whatever is inside this component”
+
+---
+
+# 🎯 Why we wrap with `<ProductContext.Provider>`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+  {children}
+</ProductContext.Provider>
+```
+
+👉 This means:
+
+> “All components inside `children` can access `products` globally”
+
+---
+
+## 🔥 Visual Understanding
+
+```
+ProductProvider
+   ↓
+ProductContext.Provider (data available here)
+   ↓
+App
+   ↓
+All components inside App
+```
+
+👉 So:
+
+* App ✅ can access context
+* All child components ✅ can access context
+
+---
+
+# ❌ What if you don’t use `{children}`?
+
+```js
+<ProductContext.Provider value={{ products }}>
+</ProductContext.Provider>
+```
+
+👉 Then NOTHING is inside it 😅
+👉 No component can access your data
+
+---
+
+# 🧠 Simple Analogy
+
+Think of it like a **WiFi Router** 📶
+
+* `<ProductContext.Provider>` = WiFi Router
+* `value={{ products }}` = Internet data
+* `{children}` = Devices connected
+
+👉 Only devices inside range (children) get internet
+
+---
+
+# ⚡ One More Example
+
+```js
+function Box({ children }) {
+  return <div>{children}</div>;
+}
+
+<Box>
+  <p>Hello</p>
+</Box>
+```
+
+👉 Output:
+
+```
+Hello
+```
+
+Because `<p>Hello</p>` is the **children**
+
+---
+
+# 🧠 Interview Line
+
+👉 “`children` is a special prop used to render nested components, and in Context API it allows all nested components to access shared data.”
+
+---
+
+If you want, next I can show:
+
+* 🔥 Why context causes re-renders (very important)
+* 🔥 How to optimize context (used in real companies)
+
+Good question — this is where many people get confused 👍
+
+## ✅ Short Answer
+
+👉 You should wrap your Context **at the highest level where all components need access**
+👉 Usually that is **inside `App.js` (around your routes)**
+
+---
+
+# 🎯 Best Practice
+
+### ✔️ Wrap around routes
+
+```js
+import { BrowserRouter } from "react-router-dom";
+import { UserProvider } from "./UserContext";
+import { ProductProvider } from "./ProductContext";
+import AppRoutes from "./routes";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <UserProvider>
+        <ProductProvider>
+          <AppRoutes />
+        </ProductProvider>
+      </UserProvider>
+    </BrowserRouter>
+  );
+}
+```
+
+👉 Now:
+
+* All pages (Home, Profile, Dashboard, etc.) ✅
+* All components inside routes ✅
+  can access your context
+
+---
+
+# 🧠 Why here?
+
+Because:
+
+```
+App
+ └── Routes
+      └── Pages
+           └── Components
+```
+
+👉 Wrapping at top ensures **everything below gets access**
+
+---
+
+# ❌ What if you wrap inside a single page?
+
+```js
+function Home() {
+  return (
+    <ProductProvider>
+      <HomeContent />
+    </ProductProvider>
+  );
+}
+```
+
+👉 Then ONLY `HomeContent` gets access
+👉 Other pages ❌ cannot access it
+
+---
+
+# ⚡ Rule to remember
+
+👉 Wrap Context:
+
+* 🔹 **Globally needed data → Wrap in App**
+* 🔹 **Page-specific data → Wrap in that page only**
+
+---
+
+# 🔥 Real Examples
+
+### Wrap in App (Global)
+
+* User login data ✅
+* Theme (dark/light) ✅
+* Cart data ✅
+
+### Wrap in Page (Local)
+
+* Form data ✅
+* Single page filters ✅
+
+---
+
+# 🧠 Interview Line
+
+👉 “Context should be wrapped at the lowest common ancestor of components that need access, typically the App component or around routing.”
+
+---
+
+If you want next level 🔥
+I can show:
+
+* How this works with **React Router (protected routes + auth context)**
+* OR how to **persist context data using localStorage (very important)**
+Alright — let’s build **React Routes properly step by step** (this is how it’s done in real projects) 👇
+
+---
+
+# ✅ 1. Install Router
+
+```bash
+npm install react-router-dom
+```
+
+---
+
+# ✅ 2. Basic Routing Setup
+
+## 👉 `App.js`
+
+```js
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+---
+
+# ✅ 3. Create Routes File
+
+## 👉 `routes.js`
+
+```js
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Users from "./pages/Users";
+import Products from "./pages/Products";
+import NotFound from "./pages/NotFound";
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+export default AppRoutes;
+```
+
+---
+
+# ✅ 4. Example Pages
+
+## 👉 `Home.js`
+
+```js
+function Home() {
+  return <h1>Home Page</h1>;
+}
+export default Home;
+```
+
+## 👉 `Users.js`
+
+```js
+function Users() {
+  return <h1>Users Page</h1>;
+}
+export default Users;
+```
+
+---
+
+# 🔥 5. Dynamic Routes (Important)
+
+```js
+<Route path="/user/:id" element={<User />} />
+```
+
+👉 Use like:
+
+```
+/user/10
+/user/25
+```
+
+## 👉 Get ID inside component
+
+```js
+import { useParams } from "react-router-dom";
+
+function User() {
+  const { id } = useParams();
+  return <h1>User ID: {id}</h1>;
+}
+```
+
+---
+
+# 🔥 6. Navigation
+
+```js
+import { Link } from "react-router-dom";
+
+<Link to="/">Home</Link>
+<Link to="/users">Users</Link>
+<Link to="/products">Products</Link>
+```
+
+---
+
+# 🔥 7. With Context (Your Case)
+
+```js
+import { BrowserRouter } from "react-router-dom";
+import { UserProvider } from "./UserContext";
+import { ProductProvider } from "./ProductContext";
+import AppRoutes from "./routes";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <UserProvider>
+        <ProductProvider>
+          <AppRoutes />
+        </ProductProvider>
+      </UserProvider>
+    </BrowserRouter>
+  );
+}
+```
+
+👉 Now ALL routes can access:
+
+* users ✅
+* products ✅
+
+---
+
+# 🧠 Folder Structure (Best Practice)
+
+```id="z6wkr2"
+src/
+ ├── pages/
+ │    ├── Home.js
+ │    ├── Users.js
+ │    └── Products.js
+ ├── context/
+ │    ├── UserContext.js
+ │    └── ProductContext.js
+ ├── routes.js
+ └── App.js
+```
+
+---
+
+# ⚠️ Common Mistakes
+
+* ❌ Forgetting `<BrowserRouter>`
+* ❌ Using `component=` instead of `element=`
+* ❌ Not using `*` for 404 page
+
+---
+
+# 🧠 Interview Line
+
+👉 “In React Router v6, routes are defined using `<Routes>` and `<Route>` with the `element` prop, and routing is wrapped inside `BrowserRouter`.”
+
+---
+
+If you want next 🔥
+I can show:
+
+* Protected routes (login required pages)
+* OR how to pass data between routes (very important in real apps)

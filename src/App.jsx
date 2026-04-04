@@ -12,15 +12,18 @@ import RefHook from './refHook'
 import Parent from './Parent'
 import Useactionstate from './Useactionstate'
 import Uuid from './UUid'
+import { CounterProvider } from './ContextData'
 function App() {
   const [count, setCount] = useState(0);
   const [val, setVal] = useState("hello");
   return (
     <>
-      <Parent />
-      <RefHook />
-      <Useactionstate />
-      <Uuid />
+      <CounterProvider>
+        <Parent />
+        {/* <RefHook />
+        <Useactionstate />
+        <Uuid /> */}
+      </CounterProvider>
     </>
   )
 }
