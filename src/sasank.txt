@@ -8,3 +8,6 @@ use transition
 
 
 cusome component
+
+
+to install routers: npm i react-router 

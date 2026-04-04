@@ -1,5 +1,5 @@
 
-
+import { Link } from "react-router";
 
 import { useActionState } from "react";
 
@@ -23,8 +23,9 @@ function Useactionstate() {
                 <button type="submit" disabled={pending}>
                     {pending ? "Submitting..." : "Submit"}
                 </button>
-            </form>
 
+            </form>
+            <Link to="/">Home</Link>
             <h3>{data}</h3>
         </>
     );

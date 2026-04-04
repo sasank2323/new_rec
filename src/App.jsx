@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -18,9 +19,23 @@ function App() {
   const [val, setVal] = useState("hello");
   return (
     <>
+
+
       <CounterProvider>
-        <Parent />
-        {/* <RefHook />
+        <BrowserRouter>
+          <Link to="/">Home</Link> <br />
+          <Link to="/refHook">RefHook</Link> <br />
+          <Link to="/useactionstate">Useactionstate</Link> <br />
+          <Link to="/uuid">Uuid</Link> <br />
+          <Routes>
+            <Route path="/" element={<Parent />} />
+            <Route path="/refHook" element={<RefHook />} />
+            <Route path="/useactionstate" element={<Useactionstate />} />
+            <Route path="/uuid" element={<Uuid />} />
+          </Routes>
+        </BrowserRouter>
+        {/* <Parent />
+        <RefHook />
         <Useactionstate />
         <Uuid /> */}
       </CounterProvider>
