@@ -14,6 +14,7 @@ import Parent from './Parent'
 import Useactionstate from './Useactionstate'
 import Uuid from './UUid'
 import { CounterProvider } from './ContextData'
+import LazyLoadingEx from './LazyLoadingEx'
 function App() {
   const [count, setCount] = useState(0);
   const [val, setVal] = useState("hello");
@@ -21,24 +22,7 @@ function App() {
     <>
 
 
-      <CounterProvider>
-        <BrowserRouter>
-          <Link to="/">Home</Link> <br />
-          <Link to="/refHook">RefHook</Link> <br />
-          <Link to="/useactionstate">Useactionstate</Link> <br />
-          <Link to="/uuid">Uuid</Link> <br />
-          <Routes>
-            <Route path="/" element={<Parent />} />
-            <Route path="/refHook" element={<RefHook />} />
-            <Route path="/useactionstate" element={<Useactionstate />} />
-            <Route path="/uuid" element={<Uuid />} />
-          </Routes>
-        </BrowserRouter>
-        {/* <Parent />
-        <RefHook />
-        <Useactionstate />
-        <Uuid /> */}
-      </CounterProvider>
+      <LazyLoadingEx />
     </>
   )
 }
@@ -48,3 +32,6 @@ function sum(a, b) {
 }
 
 export default App
+
+
+

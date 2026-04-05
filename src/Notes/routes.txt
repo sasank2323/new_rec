@@ -1,0 +1,24 @@
+<CounterProvider>
+        <BrowserRouter>
+          <Link to="/">Home</Link> <br />
+          <Link to="/refHook">RefHook</Link> <br />
+          <Link to="/useactionstate">Useactionstate</Link> <br />
+          <Link to="/uuid">Uuid</Link> <br />
+          <Routes>
+            {/* route in route so toogle will show only in parent and ref hook you can replace toggle with nav bar */}
+            <Route element={<Toggle />} >
+              <Route path="/" element={<Parent />} />
+              <Route path="/refHook" element={<RefHook />} />
+            </Route>
+
+            <Route path="/" element={<Parent />} />
+            <Route path="/refHook" element={<RefHook />} />
+            <Route path="/useactionstate" element={<Useactionstate />} />
+            <Route path="/uuid" element={<Uuid />} />
+          </Routes>
+        </BrowserRouter>
+        {/* <Parent />
+        <RefHook />
+        <Useactionstate />
+        <Uuid /> */}
+      </CounterProvider>
